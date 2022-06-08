@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import "./App.css";
 import { ethers } from "ethers";
-import abi from "./utils/wavePortal.json";
+import abi from "./utils/waveportal.json";
 import { contractAddress } from "./config";
 
 function App() {
