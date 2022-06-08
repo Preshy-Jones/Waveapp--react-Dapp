@@ -39,6 +39,13 @@ module.exports = {
         body: ["Montserrat"],
         poppins: ["'Poppins', sans-serif"],
         sans2: ["roboto"],
+        alfa: ["Alfa Slab One"],
+        allura:["Allura"],
+        badscript:["Bad Script"],
+        luckiest:["Luckiest Guy"],
+        monofett:["Monofett"],
+        elite:["Special Elite"],
+        yellowtail:["Yellowtail"]
       },
       fontSize: {
         xxxs: ["0.5rem", { lineHeight: "0.7rem" }],

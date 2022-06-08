@@ -3,6 +3,7 @@ import "./App.css";
 import { ethers } from "ethers";
 import abi from "./utils/waveportal.json";
 import { contractAddress } from "./config";
+import { motion } from "framer-motion";
 
 function App() {
   const [currentAccount, setCurrentAccount] = useState("");
@@ -12,6 +13,7 @@ function App() {
   const { ethereum } = window;
   const [allWaves, setAllWaves] = useState([]);
   const [message, setMessage] = useState("");
+  const [status, setStatus] = useState("");
 
   const createEthereumContract = () => {
     const provider = new ethers.providers.Web3Provider(ethereum);
@@ -72,6 +74,7 @@ function App() {
   const wave = async (e) => {
     e.preventDefault();
     setMessage("");
+    setStatus("");
     try {
       if (ethereum) {
         const wavePortalContract = createEthereumContract();
@@ -89,6 +92,7 @@ function App() {
         console.log("Mined -- ", waveTxn.hash);
 
         setIsWaving(false);
+        setStatus("success");
 
         await getAllWaves();
         await getTotalWaves();
@@ -100,6 +104,7 @@ function App() {
       }
     } catch (error) {
       // throw(error);
+      setStatus("error");
       console.log(error.message);
       console.log(typeof error.message);
     }
@@ -201,20 +206,37 @@ function App() {
   return (
     <div className="App gradient-bg-welcome">
       <div className="">
-        <div className="text-white">👋 Hey there!</div>
+        <div className="text-white text-[2em] font-luckiest">👋 Hey there!</div>
 
-        <div className="text-white">I am Precious</div>
+        <h2 className="text-white font-elite text-[5em] m-0">I am Precious</h2>
+        <h2 className="text-[3em] font-badscript text-superadmin">Give me a wave</h2>
+        {/* <p className="text-lime-500">Total waves:{totalWaves}</p> */}
 
-        <p className="text-lime-500">Total waves:{totalWaves}</p>
+        {status && (
+          <motion.p
+            initial={{ x: "100vw" }}
+            animate={{ x: 0 }}
+            transition={{ duration: 1 }}
+            className={`${
+              status === "success" ? "text-lime-500" : "text-red-500"
+            } text-[3em] font-elite`}
+          >
+            {status === "success"
+              ? "Awesome, what a Wave!"
+              : "An error occurred, try again later"}
+          </motion.p>
+        )}
         {/*
          * If there is no currentAccount render this button
          */}
         {!currentAccount && (
           <button
-            className="waveButton bg-primary text-white p-1 rounded-md"
+            type="button"
             onClick={connectWallet}
+            className="my-5 bg-[#2952e3] p-3 rounded-full cursor-pointer hover:bg-[#2546bd]"
           >
-            Connect Wallet
+            {/* <AiFillPlayCircle className="text-white mr-2" /> */}
+            <p className="text-white text-base font-semibold">Connect Wallet</p>
           </button>
         )}
         <div className="mb-4 flex justify-center">
@@ -239,7 +261,11 @@ function App() {
             </div>
           </form>
         </div>
-        <div className="grid grid-cols-3 gap-7 py-4">
+
+        <h1 className="font-alfa text-lg text-white tracking-wide mb-2 mt-12">
+          All Waves
+        </h1>
+        <div className="grid grid-cols-3 gap-7 pb-4">
           {allWaves.map((wave, index) => (
             <div
               className="bg-black rounded-md text-white"
