@@ -71,20 +71,25 @@ function App() {
 
   const wave = async (e) => {
     e.preventDefault();
+    setMessage("");
     try {
       if (ethereum) {
         const wavePortalContract = createEthereumContract();
 
         let count = await wavePortalContract.getTotalWaves();
         console.log("Retrieved total wave count...", count.toNumber());
-        const waveTxn = await wavePortalContract.wave(message);
         setIsWaving(true);
+        const waveTxn = await wavePortalContract.wave(message, {
+          gasLimit: 300000,
+        });
+
         console.log("Mining...", waveTxn.hash);
 
         await waveTxn.wait();
         console.log("Mined -- ", waveTxn.hash);
 
         setIsWaving(false);
+
         await getAllWaves();
         await getTotalWaves();
         count = await wavePortalContract.getTotalWaves();
@@ -94,7 +99,9 @@ function App() {
         console.log("Ethereum object doesn't exist!");
       }
     } catch (error) {
-      console.log(error);
+      // throw(error);
+      console.log(error.message);
+      console.log(typeof error.message);
     }
   };
 
@@ -158,63 +165,96 @@ function App() {
     getTotalWaves();
   }, []);
 
+  useEffect(() => {
+    let wavePortalContract;
+
+    const onNewWave = (from, timestamp, message) => {
+      console.log("NewWave", from, timestamp, message);
+      setAllWaves((prevState) => [
+        ...prevState,
+        {
+          address: from,
+          timestamp: new Date(timestamp * 1000),
+          message: message,
+        },
+      ]);
+    };
+
+    if (window.ethereum) {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+
+      wavePortalContract = new ethers.Contract(
+        contractAddress,
+        contractABI,
+        signer
+      );
+      wavePortalContract.on("NewWave", onNewWave);
+    }
+
+    return () => {
+      if (wavePortalContract) {
+        wavePortalContract.off("NewWave", onNewWave);
+      }
+    };
+  }, []);
   return (
-    <div className="App">
-      <div className="mainContainer gradient-bg-welcome h-screen">
-        <div className="dataContainer">
-          <div className="text-white">👋 Hey there!</div>
+    <div className="App gradient-bg-welcome">
+      <div className="">
+        <div className="text-white">👋 Hey there!</div>
 
-          <div className="text-white">I am Precious</div>
+        <div className="text-white">I am Precious</div>
 
-          <p className="text-lime-500">Total waves:{totalWaves}</p>
-          {/*
-           * If there is no currentAccount render this button
-           */}
-          {!currentAccount && (
-            <button
-              className="waveButton bg-primary text-white p-1 rounded-md"
-              onClick={connectWallet}
-            >
-              Connect Wallet
-            </button>
-          )}
-          <div className="grid grid-cols-3 gap-7">
-            {allWaves.map((wave, index) => (
-              <div
-                key={index}
-                style={{
-                  backgroundColor: "OldLace",
-                  padding: "8px",
-                }}
+        <p className="text-lime-500">Total waves:{totalWaves}</p>
+        {/*
+         * If there is no currentAccount render this button
+         */}
+        {!currentAccount && (
+          <button
+            className="waveButton bg-primary text-white p-1 rounded-md"
+            onClick={connectWallet}
+          >
+            Connect Wallet
+          </button>
+        )}
+        <div className="mb-4 flex justify-center">
+          <form onSubmit={wave} className="mt-5 w-eleventh">
+            {!isWaving && (
+              <input
+                className="px-3 rounded-md border w-full border-prim py-1"
+                type="text"
+                placeholder="Enter your message.."
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+              />
+            )}
+            <div className="mt-2">
+              <button
+                disabled={isWaving}
+                type="submit"
+                className="text-white mt-2 border-[1px] p-2 border-[#3d4f7c] hover:bg-[#3d4f7c] rounded-full cursor-pointer w-44"
               >
-                <div>Address: {wave.address}</div>
-                <div>Time: {wave.timestamp.toString()}</div>
-                <div>Message: {wave.message}</div>
+                {isWaving ? "Loading...." : "Wave at Me"}
+              </button>
+            </div>
+          </form>
+        </div>
+        <div className="grid grid-cols-3 gap-7 py-4">
+          {allWaves.map((wave, index) => (
+            <div
+              className="bg-black rounded-md text-white"
+              key={index}
+              style={{
+                padding: "8px",
+              }}
+            >
+              <div className="mb-3">
+                <h2 className="break-words">Address: {wave.address}</h2>
               </div>
-            ))}
-          </div>
-          <div>
-            <h1>{message}</h1>
-            <form onSubmit={wave} className="mt-5">
-              {!isWaving && (
-                <input
-                  className="rounded-md border border-prim"
-                  type="text"
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                />
-              )}
-              <div className="mt-4">
-                <button
-                  disabled={isWaving}
-                  type="submit"
-                  className="waveButton bg-primary text-white p-1 rounded-md"
-                >
-                  {isWaving ? "Loading...." : "Wave at Me"}
-                </button>
-              </div>
-            </form>
-          </div>
+              <div className="mb-3">Time: {wave.timestamp.toString()}</div>
+              <div>Message: {wave.message}</div>
+            </div>
+          ))}
         </div>
       </div>
     </div>

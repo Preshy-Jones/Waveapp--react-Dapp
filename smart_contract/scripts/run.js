@@ -42,9 +42,15 @@ const main = async () => {
   console.log(wavers);
 
   waveTxn = await waveContract
-    .connect(randomPerson)
+    //.connect(randomPerson)
     .wave("An unfactos message");
   await waveTxn.wait();
+
+  contractBalance = await hre.ethers.provider.getBalance(waveContract.address);
+  console.log(
+    "Contract balance:",
+    hre.ethers.utils.formatEther(contractBalance)
+  );
 
   waveCount = await waveContract.getTotalWaves();
   console.log(waveCount);
