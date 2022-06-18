@@ -164,13 +164,7 @@ function App() {
    */
   useEffect(() => {
     checkIfWalletIsConnected();
-  }, []);
-
-  useEffect(() => {
     getTotalWaves();
-  }, []);
-
-  useEffect(() => {
     let wavePortalContract;
 
     const onNewWave = (from, timestamp, message) => {
@@ -203,6 +197,7 @@ function App() {
       }
     };
   }, []);
+
   return (
     <div className="App gradient-bg-welcome">
       <div className="">
