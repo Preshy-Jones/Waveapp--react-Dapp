@@ -272,7 +272,7 @@ function App() {
               <div className="mb-3">
                 <h2 className="break-words">Address: {wave.address}</h2>
               </div>
-              <div className="mb-3">Time: {wave.timestamp.toString()}</div>
+              <div className="mb-3">Time Stamp: {wave.timestamp.toString()}</div>
               <div>Message: {wave.message}</div>
             </div>
           ))}
