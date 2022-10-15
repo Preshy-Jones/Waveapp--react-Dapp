@@ -148,6 +148,7 @@ function App() {
          * Store our data in React State
          */
         setAllWaves(wavesCleaned);
+        console.log(allWaves);
       } else {
         console.log("Ethereum object doesn't exist!");
       }
@@ -204,7 +205,13 @@ function App() {
         <div className="text-white text-[2em] font-luckiest">👋 Hey there!</div>
 
         <h2 className="text-white font-elite text-[5em] m-0">I am Precious</h2>
-        <h2 className="text-[3em] font-badscript text-superadmin">Give me a wave</h2>
+        <h2 className="text-[3em] font-allura text-superadmin">
+          Give me a wave
+        </h2>
+        <h3 className="text-white font-elite text-[2em] m-0">
+          {" "}
+          Total waves: {totalWaves}
+        </h3>
         {/* <p className="text-lime-500">Total waves:{totalWaves}</p> */}
 
         {status && (
@@ -236,14 +243,17 @@ function App() {
         )}
         <div className="mb-4 flex justify-center">
           <form onSubmit={wave} className="mt-5 w-eleventh">
+            {message}
             {!isWaving && (
-              <input
+              <textarea
                 className="px-3 rounded-md border w-full border-prim py-1"
                 type="text"
                 placeholder="Enter your message.."
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-              />
+                cols="30"
+                rows="10"
+              ></textarea>
             )}
             <div className="mt-2">
               <button
@@ -272,7 +282,9 @@ function App() {
               <div className="mb-3">
                 <h2 className="break-words">Address: {wave.address}</h2>
               </div>
-              <div className="mb-3">Time Stamp: {wave.timestamp.toString()}</div>
+              <div className="mb-3">
+                Time Stamp: {wave.timestamp.toString()}
+              </div>
               <div>Message: {wave.message}</div>
             </div>
           ))}
