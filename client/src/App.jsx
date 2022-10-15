@@ -243,17 +243,14 @@ function App() {
         )}
         <div className="mb-4 flex justify-center">
           <form onSubmit={wave} className="mt-5 w-eleventh">
-            {message}
             {!isWaving && (
-              <textarea
+              <input
                 className="px-3 rounded-md border w-full border-prim py-1"
                 type="text"
                 placeholder="Enter your message.."
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                cols="30"
-                rows="10"
-              ></textarea>
+              />
             )}
             <div className="mt-2">
               <button
